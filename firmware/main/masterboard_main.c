@@ -15,8 +15,15 @@
 #include "spi_manager.h"
 #include "spi_quad_packet.h"
 #include "quad_crc.h"
-#include "uart_imu.h"
 #include "ws2812_led_control.h"
+
+#include "uart_imu.h"
+#include "mip_sdk.h"
+#include "byteswap_utilities.h"
+#include "mip_gx4_imu.h"
+#include "mip_gx4_45.h"
+#include <stdio.h>
+#include <unistd.h>
 
 #include "defines.h"
 
@@ -69,6 +76,8 @@ struct wifi_eth_packet_sensor wifi_eth_tx_data;
 struct wifi_eth_packet_ack wifi_eth_tx_ack;
 
 bool spi_use_a = true;
+
+mip_interface device_interface;  // create interface for IMU 
 
 void print_spi_connected()
 {
@@ -540,7 +549,7 @@ void app_main()
     wifi_attach_recv_cb(wifi_eth_receive_cb);
 
     printf("initialise IMU\n");
-    imu_init();
+    imu_init(&device_interface);
 
     next_state = WAITING_FOR_INIT;
 
